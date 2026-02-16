@@ -4,22 +4,23 @@ import { useLocation } from "react-router-dom";
 
 function OAuthSuccess() {
     const navigate = useNavigate();
-    const location = useLocation();
-
+    
     useEffect(() => {
-        const params = new URLSearchParams(location.search);
+        const params = new URLSearchParams(window.location.search);
         const token = params.get("token");
 
         if (token) {
             localStorage.setItem("token", token);
-            navigate("/dashboard", { replace: true });
-
+            navigate("/dashboard");
         } else {
-            navigate("/", { replace: true });
+            alert("Login Failed");
+            navigate("/");
         }
+    }, [navigate]);
 
-    }, [location, navigate]);
-    return <p>Logging you in...</p>;
+    return <h2>Logging you in...</h2>;
 }
+
+   
 
 export default OAuthSuccess;
