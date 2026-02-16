@@ -9,7 +9,7 @@ passport.use(
         {
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: `${process.env.BASE_URL}/api/auth/google/callback`,
+            callbackURL: "https://health-fitness-ai-dashboard.onrender.com/api/auth/google/callback",
 
         },
 
