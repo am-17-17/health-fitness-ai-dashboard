@@ -134,11 +134,11 @@ router.get(
             );
 
             // Redirect to frontend with token
-            res.redirect(`http://localhost:5173/oauth-success?token=${token}`);
+            res.redirect(`${process.env.CLIENT_URL}/oauth-success?token=${token}`);
 
         }
         catch (error) {
-            res.redirect("http://localhost:5173/")
+            res.redirect(process.env.CLIENT_URL)
         }
     }
 );
