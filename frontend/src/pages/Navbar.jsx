@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
+const API_URL = import.meta.env.VITE_API_URL;
 
 function Navbar() {
     const [user, setUser] = useState(null);
@@ -10,7 +11,7 @@ function Navbar() {
         const token = localStorage.getItem("token");
 
             if (token) {
-                fetch("http://localhost:5000/api/auth/profile", {
+                fetch(`${import.meta.env.VITE_API_URL}/api/auth/profile`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
