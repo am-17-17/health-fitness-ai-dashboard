@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_URL } from "../config";
 
 
 function Login() {
@@ -15,24 +16,18 @@ function Login() {
         e.preventDefault();
         try {
             const response = await axios.post(
-                `${ import.meta.env.VITE_API_URL }/api/auth/login`,
-                {
-                    email,
-                    password,
-                }
+                `${API_URL}/api/auth/login`,
+                { email, password }
             );
 
             console.log(response.data);
 
-
             localStorage.setItem("token", response.data.token);
             navigate("/dashboard");
 
-        }
-        catch (error) {
+        } catch (error) {
             console.error(error);
             alert("Login Failed");
-            
         }
 
     };
@@ -106,7 +101,7 @@ function Login() {
 
                     <button
                         onClick={() => {
-                            window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/google`;
+                            window.location.href = `${API_URL}/api/auth/google`;
                         }}
                         style={{
                             width: "100%",

@@ -1,6 +1,7 @@
 import Navbar from "./Navbar";
 import { useState } from "react";
 import Footer from "../components/Footer";
+import { API_URL } from "../config";
 
 function Contact() {
     const [formData, setFormData] = useState({
@@ -19,7 +20,7 @@ function Contact() {
     const handleSubmit = async(e) => {
         e.preventDefault();
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/contact`, {
+            const response = await fetch(`${API_URL}/api/contact`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
