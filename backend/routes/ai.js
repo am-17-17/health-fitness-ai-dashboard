@@ -12,7 +12,7 @@ router.post("/recipe", async (req, res) => {
         const { goal } = req.body;
 
         const response = await ai.models.generateContent({
-            model: "gemini-1.5-flash",
+            model: "gemini-1.5-flash-latest",
             contents: `You are a professional nutritionist.
 Create a healthy meal plan for someone whose goal is: ${goal}.
 Include breakfast, lunch, dinner and calories.`,
