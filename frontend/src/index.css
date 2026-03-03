@@ -381,3 +381,12 @@ body {
   background: #ffffff;
   color: black;
 }
+
+.main-heading {
+  text-align: center;
+  margin-top: 120px;
+  /* 👈 This pushes it downward */
+  margin-bottom: 10px;
+  font-size: 28px;
+  letter-spacing: 1px;
+}

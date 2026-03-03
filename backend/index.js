@@ -3,11 +3,12 @@ import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import authRoutes from "./routes/authRoutes.js";
-// import authMiddleware from "./middleware/authMiddleware.js";
 import authMiddleware from "./middleware/authMiddleware.js";
 import passport from "passport";
 import contactRoutes from "./routes/contactRoutes.js";
 import "./config/passport.js";
+import aiRoutes from "./routes/ai.js";
+
 
 
 
@@ -46,6 +47,7 @@ app.use(passport.initialize());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/contact", contactRoutes);
+app.use("/api/ai", aiRoutes);
 // Routes
 
 app.get("/", (req, res) => {

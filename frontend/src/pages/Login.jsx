@@ -43,7 +43,14 @@ function Login() {
     };
 
     return (
+
+       
+
+
         <div className="page">
+            <h1 className="main-heading">
+                HEALTH AND FITNESS AI
+            </h1>
             <div className="auth-card">
 
                 <h2>Welcome back</h2>
@@ -88,8 +95,8 @@ function Login() {
                                 transform: "translateY(-50%)",
                                 cursor: "pointer"
                             }}
-                        >
-                            {showPassword ? "🙈" : "👁️"}
+                        >{showPassword ? "🙈" : "👁️"}
+                            
                         </span>
                     </div>
 

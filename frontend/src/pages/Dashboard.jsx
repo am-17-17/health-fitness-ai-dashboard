@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect,useState } from "react";
 import Navbar from "./Navbar";
 import Footer from "../components/Footer";
 
@@ -29,14 +29,16 @@ function Dashboard() {
     };
 
     const navigate = useNavigate();
-    
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+
+
     useEffect(() => {
         const token = localStorage.getItem("token");
-        if (!token) {
-            navigate("/");
-        }
-    }, [navigate]);
-
+        setIsLoggedIn(!!token);
+    }, []);
+    
+    
 
     // Navigate from dashboard to login
     
@@ -61,23 +63,32 @@ function Dashboard() {
                     HEALTH & FITNESS AI DASHBOARD
                 </h1>
 
-                <button
-                    className="logout"
-                    onClick={handleLogout}
-                    
-                    style={{
-                        padding: "8px 16px",
-                        borderRadius: "6px",
-                        border: "none",
-                        background: "#ef4444",
-                        color: "white",
-                        cursor: "pointer",
-                        transition:"0.3s",
-                        
-                    }}
-                >
-                    Logout
-                </button>
+                {!isLoggedIn ? (
+                    <button
+                        className="primary-btn"
+                        onClick={() => navigate("/login")}
+                    >
+                        Login
+                    </button>
+                ) : (
+                    <button
+                        onClick={() => {
+                            localStorage.removeItem("token");
+                            setIsLoggedIn(false);
+                            navigate("/", { replace: true });
+                        }}
+                        style={{
+                            padding: "8px 16px",
+                            borderRadius: "6px",
+                            border: "none",
+                            background: "#ef4444",
+                            color: "white",
+                            cursor: "pointer",
+                        }}
+                    >
+                        Logout
+                    </button>
+                )}
             </div>
 
             {/* Navbar */}
