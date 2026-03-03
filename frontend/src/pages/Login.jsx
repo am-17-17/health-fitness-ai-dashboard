@@ -66,7 +66,7 @@ function Login() {
 
                 <h2 style={{ marginBottom: "20px" }}>Login</h2>
 
-            <form onSubmit={handelLogin}>
+                <form onSubmit={handleLogin}>
                 <input type="email"
                     placeholder="EMAIL"
                     value={email}
