@@ -13,24 +13,33 @@ function Login() {
     const navigate = useNavigate();
 
 
-    const handelLogin = async (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
+
         try {
             const response = await axios.post(
                 `${API_URL}/api/auth/login`,
                 { email, password }
             );
 
-            console.log(response.data);
+            console.log("Login Response:", response);
 
-            localStorage.setItem("token", response.data.token);
-            navigate("/dashboard");
+            // Check if token exists
+            if (response.data && response.data.token) {
+                localStorage.setItem("token", response.data.token);
+                alert("Login Successful ✅");
+                navigate("/dashboard");
+            } else {
+                alert("Invalid credentials ❌");
+            }
 
         } catch (error) {
-            console.error(error);
-            alert("Login Failed");
-        }
+            console.error("Login Error:", error.response?.data || error.message);
 
+            alert(
+                error.response?.data?.message || "Login Failed ❌"
+            );
+        }
     };
 
     return (
@@ -101,7 +110,7 @@ function Login() {
                             {showPassword ? "🙈" : "👁️"}
                         </span>
                     </div>
-                    
+
                 <br /><br />
 
                     <button type="submit"
