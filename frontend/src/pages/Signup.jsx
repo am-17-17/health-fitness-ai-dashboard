@@ -10,8 +10,23 @@ function Signup() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [strength, setStrength] = useState("");
 
     const navigate = useNavigate();
+
+    const checkStrength = (pass) => {
+        if (pass.length < 6) {
+            setStrength("Weak");
+        } else if (
+            pass.match(/[A-Z]/) &&
+            pass.match(/[0-9]/) &&
+            pass.length >= 8
+        ) {
+            setStrength("Strong");
+        } else {
+            setStrength("Medium");
+        }
+    };
 
     const handleSignup = async (e) => {
         e.preventDefault();
@@ -50,8 +65,9 @@ function Signup() {
                 padding: "40px",
                 borderRadius: "12px",
                 backdropFilter: "blur(10px)",
-                width: "350px",
-                textAlign: "center"
+                textAlign: "center",
+                width: "100%",
+                maxWidth: "350px",
             }}>
 
                 <h2 style={{ marginBottom: "20px" }}>Signup</h2>
@@ -91,7 +107,10 @@ function Signup() {
                             type={showPassword ? "text" : "password"}
                             placeholder="Password"
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={(e) => {
+                                setPassword(e.target.value);
+                                checkStrength(e.target.value);
+                            }}
                             style={{
                                 width: "100%",
                                 padding: "10px",
@@ -115,6 +134,21 @@ function Signup() {
                             {showPassword ? "🙈" : "👁️"}
                         </span>
                     </div>
+
+                    {password && (
+                        <p style={{
+                            fontSize: "14px",
+                            marginBottom: "10px",
+                            color:
+                                strength === "Weak"
+                                    ? "red"
+                                    : strength === "Medium"
+                                        ? "orange"
+                                        : "lightgreen"
+                        }}>
+                            Strength: {strength}
+                        </p>
+                    )}
 
                     <button
                         type="submit"

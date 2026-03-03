@@ -27,12 +27,12 @@ body {
 .page-content {
   align-items: center;
   height: 100%;
-  width: 290px;
+  width: 100%;
   max-width: 600px;
   margin: 60px auto;
   padding: 35px 1px;
   padding-left: 20px;
-  border: radius 16px;
+  border-radius: 16px;
   justify-content: center;
 
   background: rgba(255, 255, 255, 0.05);
@@ -183,6 +183,12 @@ body {
   .card-grid {
     margin-top: 40px;
   }
+
+    .about-container,
+    .contact-container,
+    .bmi-container {
+      padding: 20px;
+    }
 }
 
 /* ===== BMI PAGE ===== */
