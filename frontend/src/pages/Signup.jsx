@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+
 import { API_URL } from "../config";
 
 function Signup() {
@@ -8,6 +9,7 @@ function Signup() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
 
     const navigate = useNavigate();
 
@@ -84,19 +86,35 @@ function Signup() {
                         }}
                     />
 
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        style={{
-                            width: "100%",
-                            padding: "10px",
-                            marginBottom: "20px",
-                            borderRadius: "6px",
-                            border: "none"
-                        }}
-                    />
+                    <div style={{ position: "relative", width: "100%", marginBottom: "20px" }}>
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            style={{
+                                width: "100%",
+                                padding: "10px",
+                                paddingRight: "40px", // space for eye icon
+                                borderRadius: "6px",
+                                border: "none"
+                            }}
+                        />
+
+                        <span
+                            onClick={() => setShowPassword(!showPassword)}
+                            style={{
+                                position: "absolute",
+                                right: "10px",
+                                top: "50%",
+                                transform: "translateY(-50%)",
+                                cursor: "pointer",
+                                fontSize: "16px"
+                            }}
+                        >
+                            {showPassword ? "🙈" : "👁️"}
+                        </span>
+                    </div>
 
                     <button
                         type="submit"

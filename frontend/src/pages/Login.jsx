@@ -8,6 +8,7 @@ import { API_URL } from "../config";
 function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
 
     const navigate = useNavigate();
 
@@ -71,18 +72,36 @@ function Login() {
                 />
                 <br /><br />
 
-                <input type="password"
-                    placeholder="PASSWORD"
-                    value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        style={{
-                            width: "100%",
-                            padding: "10px",
-                            marginBottom: "20px",
-                            borderRadius: "6px",
-                            border: "none"
-                        }}
-                />
+                    <div style={{ position: "relative", width: "100%", marginBottom: "20px" }}>
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            placeholder="PASSWORD"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            style={{
+                                width: "100%",
+                                padding: "10px",
+                                paddingRight: "40px",
+                                borderRadius: "6px",
+                                border: "none"
+                            }}
+                        />
+
+                        <span
+                            onClick={() => setShowPassword(!showPassword)}
+                            style={{
+                                position: "absolute",
+                                right: "10px",
+                                top: "50%",
+                                transform: "translateY(-50%)",
+                                cursor: "pointer",
+                                fontSize: "16px"
+                            }}
+                        >
+                            {showPassword ? "🙈" : "👁️"}
+                        </span>
+                    </div>
+                    
                 <br /><br />
 
                     <button type="submit"
