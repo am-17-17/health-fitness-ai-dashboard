@@ -345,3 +345,39 @@ body {
   margin-bottom: 15px;
   font-size: 16px;
 }
+
+
+/* ===== AUTH PAGE ===== */
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  margin: 60px auto;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  text-align: center;
+}
+
+.auth-card input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: none;
+}
+
+.oauth-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  margin-bottom: 15px;
+  cursor: pointer;
+}
+
+.google {
+  background: #ffffff;
+  color: black;
+}

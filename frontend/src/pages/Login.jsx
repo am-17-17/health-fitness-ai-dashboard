@@ -28,7 +28,7 @@ function Login() {
             if (response.data && response.data.token) {
                 localStorage.setItem("token", response.data.token);
                 alert("Login Successful ✅");
-                navigate("/dashboard");
+                navigate("/");
             } else {
                 alert("Invalid credentials ❌");
             }
@@ -43,57 +43,40 @@ function Login() {
     };
 
     return (
-        <div
-            style={{
-                minHeight: "100vh",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                background: "linear-gradient(to bottom, #0f172a, #1e293b)",
-                color: "white"
-            }}>
-            
-            <div style={{
-                background: "rgba(255,255,255,0.05)",
-                padding: "40px",
-                borderRadius: "12px",
-                backdropFilter: "blur(10px)",
-                width: "350px",
-                textAlign: "center"
-            }}>
-            
+        <div className="page">
+            <div className="auth-card">
 
+                <h2>Welcome back</h2>
+                <p style={{ opacity: 0.7, marginBottom: "20px" }}>
+                    Login to continue
+                </p>
 
-                <h2 style={{ marginBottom: "20px" }}>Login</h2>
+                <button
+                    className="oauth-btn google"
+                    onClick={() => window.location.href = `${API_URL}/api/auth/google`}
+                >
+                    🔵 Login with Google
+                </button>
+
+                <div style={{ margin: "20px 0", opacity: 0.5 }}>
+                    Or continue with
+                </div>
 
                 <form onSubmit={handleLogin}>
-                <input type="email"
-                    placeholder="EMAIL"
-                    value={email}
+                    <input
+                        type="email"
+                        placeholder="Email"
+                        value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        style={{
-                            width: "100%",
-                            padding: "10px",
-                            marginBottom: "15px",
-                            borderRadius: "6px",
-                            border: "none"
-                        }}
-                />
-                <br /><br />
+                    />
 
-                    <div style={{ position: "relative", width: "100%", marginBottom: "20px" }}>
+                    <div style={{ position: "relative" }}>
                         <input
                             type={showPassword ? "text" : "password"}
-                            placeholder="PASSWORD"
+                            placeholder="Password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            style={{
-                                width: "100%",
-                                padding: "10px",
-                                paddingRight: "40px",
-                                borderRadius: "6px",
-                                border: "none"
-                            }}
+                            style={{ paddingRight: "40px" }}
                         />
 
                         <span
@@ -103,55 +86,18 @@ function Login() {
                                 right: "10px",
                                 top: "50%",
                                 transform: "translateY(-50%)",
-                                cursor: "pointer",
-                                fontSize: "16px"
+                                cursor: "pointer"
                             }}
                         >
                             {showPassword ? "🙈" : "👁️"}
                         </span>
                     </div>
 
-                <br /><br />
-
-                    <button type="submit"
-                        className="primary-btn"
-                        style={{
-                            width: "50%",
-                            padding: "10px",
-                            borderRadius: "15px",
-                            border: "none",
-                            background: "#3b82f6",
-                            color: "white",
-                            cursor: "pointer"
-                        }}
-                    >LOGIN
+                    <button type="submit" className="primary-btn">
+                        Login
                     </button>
+                </form>
 
-                    <button
-                        onClick={() => {
-                            window.location.href = `${API_URL}/api/auth/google`;
-                        }}
-                        style={{
-                            width: "100%",
-                            padding: "10px",
-                            marginTop: "10px",
-                            borderRadius: "6px",
-                            border: "none",
-                            background: "#db4437",
-                            color: "white",
-                            cursor: "pointer"
-                        }}
-                    >
-                        Login with Google
-                    </button>
-
-            </form>
-
-                <p style={{ marginTop: "20px" }}>
-                    New user? <Link to="/signup" style={{ color: "#3b82f6" }}>SIGNUP</Link>
-                </p>
-                
-        
             </div>
         </div>
     );
