@@ -6,7 +6,7 @@ const router = express.Router();
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-flash-latest"
+    model: "gemini-pro"
 });
 
 router.post("/recipe", async (req, res) => {
@@ -15,7 +15,7 @@ router.post("/recipe", async (req, res) => {
 
         const prompt = `
 You are a professional nutritionist.
-Create a healthy meal plan for someone whose goal is: ${goal}
+Create a healthy meal plan for someone whose goal is: ${goal}.
 Include breakfast, lunch, dinner and calories.
 `;
 
