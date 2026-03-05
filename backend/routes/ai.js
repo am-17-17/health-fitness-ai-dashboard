@@ -6,7 +6,7 @@ const router = express.Router();
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const model = genAI.getGenerativeModel({
-    model: "gemini-pro"
+    model: "gemini-1.5-flash"
 });
 
 router.post("/recipe", async (req, res) => {
@@ -28,6 +28,7 @@ Include breakfast, lunch, dinner and calories.
 
     } catch (error) {
         console.error("Gemini Error:", error);
+
         res.status(500).json({
             message: "AI Error",
             error: error.message
