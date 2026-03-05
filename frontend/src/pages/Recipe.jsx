@@ -1,6 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
 import { API_URL } from "../config";
+import Navbar from "./Navbar";
+import Footer from "../components/Footer";
 
 function Recipe() {
     const [goal, setGoal] = useState("");
@@ -41,6 +43,12 @@ function Recipe() {
             boxSizing: "border-box",
         }}>
 
+            <h1 style={{ fontSize: "22px" }}>
+                HEALTH & FITNESS AI DASHBOARD
+            </h1>
+
+            <Navbar />
+
             <div style={{
                 maxWidth: "600px",
                 margin: "80px auto",
@@ -79,23 +87,22 @@ function Recipe() {
                         className="primary-btn"
                         onClick={generateRecipe}
                     >
-                        Generate
+                        Generate Recipe
                     </button>
 
                     {loading && <p>Generating...</p>}
                 </div>
 
                 {result && (
-                    <div style={{ marginTop: "30px" }}>
-                        <h3>Recommended Meal Plan:</h3>
-
-                        <div style={{ whiteSpace: "pre-line" }}>
-                            {result}
-                        </div>
+                    <div style={{ marginTop: "30px", whiteSpace: "pre-line" }}>
+                        {result}
                     </div>
                 )}
 
             </div>
+
+            <Footer />
+
         </div>
     );
 }
