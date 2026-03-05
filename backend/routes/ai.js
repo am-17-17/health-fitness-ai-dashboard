@@ -74,6 +74,42 @@ router.post("/recipe", async (req, res) => {
     }
 });
 
+
+
+
+//  workout page
+
+router.post("/workout", async (req, res) => {
+    try {
+        const { goal } = req.body;
+
+        const completion = await groq.chat.completions.create({
+            messages: [
+                {
+                    role: "system",
+                    content: "You are a professional fitness trainer."
+                },
+                {
+                    role: "user",
+                    content: `Create a 7 day workout plan for ${goal}. Include exercises, sets, reps and rest time.`
+                }
+            ],
+            model: "llama-3.3-70b-versatile"
+        });
+
+        const workout = completion.choices[0]?.message?.content;
+
+        res.json({
+            success: true,
+            result: workout
+        });
+
+    } catch (error) {
+        console.error("Workout AI Error:", error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // Test endpoint to check available models
 router.get("/test-models", async (req, res) => {
     try {

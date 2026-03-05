@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Navbar from "./Navbar";
+import axios from "axios";
 import Footer from "../components/Footer";
 
 
@@ -8,37 +9,28 @@ function Workout() {
     // Store Selected fitness goal 
     const [goal, setGoal] = useState("");
     // Stores generated workout list
-    const [generatedWorkout, setGeneratedWorkout] = useState([]);
+    const [generatedWorkout, setGeneratedWorkout] = useState("");
 
 
     // Dummy workout plans based on goal
-    const workoutData = {
-        weightLoss: [
-            "Jump Rope - 10 mins",
-            "Burpees - 3 sets",
-            "Mountain Climbers - 3 sets"
-        ],
-        muscleGain: [
-            "Bench Press - 4 sets",
-            "Squats - 4 sets",
-            "Deadlift - 3 sets"
-        ],
-        maintain: [
-            "Jogging - 20 mins",
-            "Push-ups - 3 sets",
-            "Plank - 60 seconds"
-        ]
-    };
-
+  
 
 
     // Function to generate workout
-    const handleGenerateWorkout = () => {
-        if (goal && workoutData[goal]) {
-            setGeneratedWorkout(workoutData[goal]);
+    const handleGenerateWorkout = async () => {
+        try {
+
+            const response = await axios.post(
+                "https://health-fitness-ai-dashboard.onrender.com/api/ai/workout",
+                { goal }
+            );
+
+            setGeneratedWorkout(response.data.result);
+
+        } catch (error) {
+            console.error("Workout AI Error:", error);
         }
     };
-
 
 
 
@@ -123,16 +115,12 @@ function Workout() {
         
 
 
-            {generatedWorkout.length > 0 && (
+                {generatedWorkout && (
                 <div>
                     <h3>Recommended Workout:</h3>
-                    <ul>
-                        {generatedWorkout.map((item, index) => (
-                            <li key={index} style={{ marginBottom: "12px" }}>
-                                {item}
-                            </li>
-                        ))}
-                        </ul>
+                        <div style={{ marginTop: "20px", whiteSpace: "pre-line" }}>
+                            {generatedWorkout}
+                        </div>
                     
                 </div>
             )}
