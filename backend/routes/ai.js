@@ -3,68 +3,24 @@ import Groq from "groq-sdk";
 
 const router = express.Router();
 
-// Debug endpoint to check environment
-router.get("/debug-env", (req, res) => {
-    res.json({
-        groqKeyExists: !!process.env.GROQ_API_KEY,
-        groqKeyPrefix: process.env.GROQ_API_KEY ? process.env.GROQ_API_KEY.substring(0, 8) + "..." : "not set",
-        nodeEnv: process.env.NODE_ENV,
-        allEnvKeys: Object.keys(process.env).filter(key => !key.includes('PASS') && !key.includes('SECRET'))
-    });
-});
-
-// Initialize Groq
-let groq;
-try {
-    if (!process.env.GROQ_API_KEY) {
-        console.error("❌ GROQ_API_KEY is not set");
-    } else {
-        groq = new Groq({
-            apiKey: process.env.GROQ_API_KEY
-        });
-        console.log("✅ Groq initialized with key:", process.env.GROQ_API_KEY.substring(0, 8) + "...");
-    }
-} catch (error) {
-    console.error("❌ Failed to initialize Groq:", error);
+// Check if API key exists
+if (!process.env.GROQ_API_KEY) {
+    console.error("❌ GROQ_API_KEY is not set in environment variables");
 }
 
-// Simple test endpoint
-router.get("/test", (req, res) => {
-    res.json({
-        message: "AI route is working",
-        groqReady: !!groq
-    });
+const groq = new Groq({
+    apiKey: process.env.GROQ_API_KEY
 });
 
-// Test Groq connection
-router.get("/test-groq", async (req, res) => {
-    try {
-        if (!groq) {
-            return res.status(500).json({ error: "Groq not initialized" });
-        }
-
-        const completion = await groq.chat.completions.create({
-            messages: [
-                { role: "user", content: "Say 'Groq is working!'" }
-            ],
-            model: "mixtral-8x7b-32768",
-            max_tokens: 20
-        });
-
-        res.json({
-            success: true,
-            message: "Groq is connected!",
-            response: completion.choices[0]?.message?.content
-        });
-    } catch (error) {
-        console.error("❌ Groq test failed:", error);
-        res.status(500).json({
-            success: false,
-            error: error.message,
-            status: error.status
-        });
-    }
-});
+// List of currently available models on Groq
+const AVAILABLE_MODELS = {
+    // Fast models
+    fast: "llama-3.3-70b-versatile",  // Fast and capable
+    // Alternative models if needed:
+    // "mixtral-8x7b-32768" is DEPRECATED - do not use
+    // "llama2-70b-4096" is also available
+    // "gemma2-9b-it" is another option
+};
 
 router.post("/recipe", async (req, res) => {
     console.log("📝 Recipe endpoint called with body:", req.body);
@@ -77,25 +33,21 @@ router.post("/recipe", async (req, res) => {
             return res.status(400).json({ error: "Goal is required" });
         }
 
-        if (!groq) {
-            console.log("❌ Groq not initialized");
-            return res.status(500).json({ error: "Groq client not initialized" });
-        }
-
         console.log(`📝 Generating recipe for goal: ${goal}`);
 
+        // Using the current working model
         const completion = await groq.chat.completions.create({
             messages: [
                 {
                     role: "system",
-                    content: "You are a professional nutritionist. Create healthy meal plans with breakfast, lunch, dinner, and approximate calories."
+                    content: "You are a professional nutritionist. Create healthy meal plans with breakfast, lunch, dinner, and approximate calories. Be practical and specific."
                 },
                 {
                     role: "user",
                     content: `Create a detailed meal plan for ${goal}`
                 }
             ],
-            model: "mixtral-8x7b-32768",
+            model: "llama-3.3-70b-versatile", // Current working model
             temperature: 0.7,
             max_tokens: 1000
         });
@@ -111,16 +63,68 @@ router.post("/recipe", async (req, res) => {
     } catch (error) {
         console.error("❌ Groq Error:", {
             message: error.message,
-            status: error.status,
-            stack: error.stack
+            status: error.status
         });
 
         res.status(500).json({
             success: false,
             error: error.message,
-            details: "Check server logs for more info"
+            hint: "If model error, try: llama-3.3-70b-versatile or mixtral-8x7b-32768 is deprecated"
         });
     }
+});
+
+// Test endpoint to check available models
+router.get("/test-models", async (req, res) => {
+    try {
+        // Try with a simple prompt
+        const testModel = await groq.chat.completions.create({
+            messages: [
+                { role: "user", content: "Say 'working'" }
+            ],
+            model: "llama-3.3-70b-versatile",
+            max_tokens: 10
+        });
+
+        res.json({
+            success: true,
+            message: "Current model is working!",
+            modelUsed: "llama-3.3-70b-versatile",
+            response: testModel.choices[0]?.message?.content
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+// Alternative: Try different models if one doesn't work
+router.get("/try-alternatives", async (req, res) => {
+    const modelsToTry = [
+        "llama-3.3-70b-versatile",
+        "llama3-70b-8192",
+        "mixtral-8x7b-32768", // This one is deprecated but showing as example
+        "gemma2-9b-it"
+    ];
+
+    const results = {};
+
+    for (const model of modelsToTry) {
+        try {
+            const test = await groq.chat.completions.create({
+                messages: [{ role: "user", content: "Say 'hi'" }],
+                model: model,
+                max_tokens: 5
+            });
+            results[model] = { working: true, response: test.choices[0]?.message?.content };
+        } catch (e) {
+            results[model] = { working: false, error: e.message };
+        }
+    }
+
+    res.json(results);
 });
 
 export default router;
