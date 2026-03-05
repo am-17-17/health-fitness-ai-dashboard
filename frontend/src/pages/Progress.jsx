@@ -27,7 +27,7 @@ function Progress() {
         const updatedHistory = history.filter((_, index) => index !== indextoDelete);
         
         setHistory(updatedHistory);
-        localStorage.setItem("bmiHistroy", JSON.stringify(updatedHistory));
+        localStorage.setItem("bmiHistory", JSON.stringify(updatedHistory));
     };
 
     return (
