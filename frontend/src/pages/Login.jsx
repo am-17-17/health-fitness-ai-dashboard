@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../config";
+import { FcGoogle } from "react-icons/fc";
 
 
 function Login() {
@@ -58,11 +59,9 @@ function Login() {
                     Login to continue
                 </p>
 
-                <button
-                    className="oauth-btn google"
-                    onClick={() => window.location.href = `${API_URL}/api/auth/google`}
-                >
-                    🔵 Login with Google
+                <button className="google-btn">
+                    <FcGoogle size={20} style={{ marginRight: "10px" }} />
+                    Login with Google
                 </button>
 
                 <div style={{ margin: "20px 0", opacity: 0.5 }}>
