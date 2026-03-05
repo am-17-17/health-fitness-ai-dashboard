@@ -18,17 +18,21 @@ function Workout() {
 
     // Function to generate workout
     const handleGenerateWorkout = async () => {
-        try {
+        if (!goal.trim()) {
+            alert("Please enter a goal");
+            return;
+        }
 
+        try {
             const response = await axios.post(
-                "https://health-fitness-ai-dashboard.onrender.com/api/ai/workout",
+                `${API_URL}/api/ai/workout`,
                 { goal }
             );
 
             setGeneratedWorkout(response.data.result);
 
         } catch (error) {
-            console.error("Workout AI Error:", error);
+            console.error(error);
         }
     };
 
@@ -75,21 +79,19 @@ function Workout() {
                     alignItems: "center",
                     gap: "20px"
                 }}>
-                    <select
-                value={goal}
-                onChange={(e) => setGoal(e.target.value)}
-                style={{
-                    padding: "17px 24px",
-                    border: "none",
-                    borderRadius: "8px",
-                    marginTop: "20px",
-                }}
-            >
-                <option value="">Select Your Goal</option>
-                <option value="weightLoss">Weight Loss</option>
-                <option value="muscleGain">Muscle Gain</option>
-                <option value="maintain">Maintain Fitness</option>
-            </select>
+                    <input
+                        type="text"
+                        placeholder="Enter your goal (e.g. weight loss)"
+                        value={goal}
+                        onChange={(e) => setGoal(e.target.value)}
+                        style={{
+                            padding: "15px 20px",
+                            borderRadius: "8px",
+                            border: "none",
+                            width: "250px",
+                            marginTop: "20px"
+                        }}
+                    />
                 </div>
                 
 
