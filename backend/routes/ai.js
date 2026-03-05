@@ -12,7 +12,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // Try to use an available model
 const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-pro" // or "gemini-pro"
+    model: "gemini-1.0-pro" // or "gemini-pro"
 });
 
 router.post("/recipe", async (req, res) => {
