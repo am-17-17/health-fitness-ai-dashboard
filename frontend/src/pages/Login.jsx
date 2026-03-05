@@ -60,8 +60,11 @@ function Login() {
                     Login to continue
                 </p>
 
-                <button className="google-btn">
-                    <FcGoogle size={20} style={{ marginRight: "10px" }} />
+                <button
+                    className="google-btn"
+                    onClick={() => window.location.href = `${API_URL}/api/auth/google`}
+                >
+                    <FcGoogle size={20} />
                     Login with Google
                 </button>
 
