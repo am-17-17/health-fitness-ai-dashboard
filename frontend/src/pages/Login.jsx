@@ -106,6 +106,13 @@ function Login() {
                     <button type="submit" className="primary-btn">
                         Login
                     </button>
+
+                    <p style={{ marginTop: "20px", opacity: 0.8 }}>
+                        Don't have an account?{" "}
+                        <Link to="/signup" style={{ color: "#4da3ff", fontWeight: "500" }}>
+                            Sign up
+                        </Link>
+                    </p>
                 </form>
 
             </div>
