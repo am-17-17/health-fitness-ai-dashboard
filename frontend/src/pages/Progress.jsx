@@ -23,7 +23,7 @@ function Progress() {
     
     
     // Delete single record 
-    const handelDelete = (indextoDelete) => {
+    const handleDelete = (indextoDelete) => {
         const updatedHistory = history.filter((_, index) => index !== indextoDelete);
         
         setHistory(updatedHistory);
