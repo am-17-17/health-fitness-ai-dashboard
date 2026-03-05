@@ -34,6 +34,7 @@ function Profile() {
 
             } catch (error) {
                 console.error(error);
+                localStorage.removeItem("token");
                 setLoading(false);
                 navigate("/");
                 
