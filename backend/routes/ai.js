@@ -10,63 +10,155 @@ if (!process.env.GEMINI_API_KEY) {
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// Try different model options - uncomment the one you want to test
-const model = genAI.getGenerativeModel({
-    model: "gemini-1.0-pro" // Try this first
-});
+// Array of possible model names to try
+const POSSIBLE_MODELS = [
+    "gemini-pro",
+    "gemini-1.5-pro",
+    "gemini-1.5-flash",
+    "gemini-1.0-pro-001",
+    "gemini-pro-vision",
+    "models/gemini-pro",  // Try with models/ prefix
+    "models/gemini-1.5-pro",
+];
 
-// Alternative models to try if gemini-1.0-pro doesn't work:
-// model: "gemini-pro"
-// model: "gemini-1.5-pro"
-// model: "gemini-1.5-flash"
+// Try to find a working model
+let workingModel = null;
+let model = null;
 
-// Route to check available models (move this OUTSIDE the error handler)
-router.get("/check-models", async (req, res) => {
+// Function to test a model
+async function testModel(modelName) {
     try {
-        // Note: listModels() might not be available in all versions
-        // If this fails, we'll try an alternative approach
+        console.log(`🔄 Testing model: ${modelName}`);
+        const testModel = genAI.getGenerativeModel({ model: modelName });
+        const result = await testModel.generateContent("Say 'test' in one word");
+        const response = await result.response;
+        const text = response.text();
+        console.log(`✅ Model ${modelName} works! Response: ${text}`);
+        return true;
+    } catch (error) {
+        console.log(`❌ Model ${modelName} failed:`, error.message);
+        return false;
+    }
+}
+
+// Initialize - try to find a working model on startup
+(async function initializeModel() {
+    console.log("🔍 Looking for a working Gemini model...");
+
+    for (const modelName of POSSIBLE_MODELS) {
+        const works = await testModel(modelName);
+        if (works) {
+            workingModel = modelName;
+            model = genAI.getGenerativeModel({ model: modelName });
+            console.log(`🎉 Using model: ${workingModel}`);
+            break;
+        }
+    }
+
+    if (!workingModel) {
+        console.error("❌ No working Gemini model found!");
+        // Fallback to gemini-pro as default
+        try {
+            model = genAI.getGenerativeModel({ model: "gemini-pro" });
+            console.log("⚠️ Using fallback model: gemini-pro");
+        } catch (error) {
+            console.error("❌ Fallback also failed:", error.message);
+        }
+    }
+})();
+
+// ✅ DEBUG ROUTE - moved outside and before other routes
+router.get("/debug-gemini", async (req, res) => {
+    try {
+        const results = {};
+        const errors = {};
+
+        // Test each model quickly
+        for (const modelName of POSSIBLE_MODELS.slice(0, 5)) { // Test first 5 models
+            try {
+                console.log(`🔍 Debug testing: ${modelName}`);
+                const testModel = genAI.getGenerativeModel({ model: modelName });
+                const result = await testModel.generateContent("Say 'hi' in one word");
+                const text = (await result.response).text();
+                results[modelName] = { success: true, response: text };
+            } catch (e) {
+                errors[modelName] = {
+                    message: e.message,
+                    status: e.status,
+                    statusText: e.statusText
+                };
+                results[modelName] = { success: false };
+            }
+        }
+
+        // Check if model is initialized
+        const modelStatus = {
+            workingModel: workingModel,
+            modelInitialized: !!model,
+            fallbackActive: !workingModel && !!model
+        };
+
         res.json({
-            message: "Model check endpoint",
-            currentModel: model.model,
-            note: "Use the test-prompt endpoint to test specific models"
+            status: "debug info",
+            apiKeyExists: !!process.env.GEMINI_API_KEY,
+            apiKeyPrefix: process.env.GEMINI_API_KEY ?
+                process.env.GEMINI_API_KEY.substring(0, 8) + "..." : "none",
+            modelStatus,
+            testResults: results,
+            errors: errors,
+            possibleModels: POSSIBLE_MODELS,
+            note: "Check server console for detailed logs"
         });
     } catch (error) {
+        console.error("Debug endpoint error:", error);
         res.status(500).json({
-            error: "Failed to check models",
+            error: "Debug endpoint failed",
             message: error.message
         });
     }
 });
 
-// Test endpoint to try different models
-router.post("/test-prompt", async (req, res) => {
+// Route to check available models
+router.get("/check-models", async (req, res) => {
+    res.json({
+        currentModel: workingModel || "Not set - trying gemini-pro",
+        possibleModels: POSSIBLE_MODELS,
+        note: "Testing different models on startup. Check server logs."
+    });
+});
+
+// Route to manually test a specific model
+router.post("/test-model", async (req, res) => {
     try {
-        const { modelName, prompt } = req.body;
+        const { modelName } = req.body;
 
-        // Create a new model instance with the requested model name
-        const testModel = genAI.getGenerativeModel({
-            model: modelName || "gemini-1.0-pro"
-        });
+        if (!modelName) {
+            return res.status(400).json({ error: "modelName is required" });
+        }
 
-        const testPrompt = prompt || "Say hello in one word";
-        const result = await testModel.generateContent(testPrompt);
+        console.log(`🧪 Testing model: ${modelName}`);
+        const testModel = genAI.getGenerativeModel({ model: modelName });
+        const result = await testModel.generateContent("Say 'hello' in one word");
         const response = await result.response;
         const text = response.text();
 
         res.json({
             success: true,
-            modelUsed: modelName || "gemini-1.0-pro",
+            model: modelName,
             response: text
         });
     } catch (error) {
+        console.error(`❌ Test model failed: ${req.body.modelName}`, error.message);
         res.status(500).json({
             success: false,
+            model: req.body.modelName,
             error: error.message,
             status: error.status
         });
     }
 });
 
+// Main recipe route
 router.post("/recipe", async (req, res) => {
     try {
         const { goal } = req.body;
@@ -78,6 +170,7 @@ router.post("/recipe", async (req, res) => {
         }
 
         console.log(`📝 Generating recipe for goal: ${goal}`);
+        console.log(`🤖 Using model: ${workingModel || "gemini-pro"}`);
 
         const prompt = `
 You are a professional nutritionist.
@@ -86,7 +179,18 @@ Include breakfast, lunch, dinner and calories.
 Format the response in a clear, readable way.
 `;
 
-        const result = await model.generateContent(prompt);
+        // Check if model is initialized
+        if (!model) {
+            console.error("❌ Model not initialized");
+            return res.status(503).json({
+                message: "AI Service is initializing. Please try again.",
+                error: "Model not ready"
+            });
+        }
+
+        // Use the model (either working one or fallback)
+        const currentModel = model;
+        const result = await currentModel.generateContent(prompt);
         const response = await result.response;
         const text = response.text();
 
@@ -94,6 +198,7 @@ Format the response in a clear, readable way.
 
         res.json({
             result: text,
+            modelUsed: workingModel || "gemini-pro"
         });
 
     } catch (error) {
@@ -103,19 +208,12 @@ Format the response in a clear, readable way.
             statusText: error.statusText
         });
 
-        // Check for specific model errors
-        if (error.message?.includes("Not Found")) {
-            res.status(500).json({
-                message: "AI Model configuration error. Please check the model name.",
-                error: "Model not found",
-                suggestion: "Try using /api/ai/test-prompt endpoint to test different models"
-            });
-        } else {
-            res.status(500).json({
-                message: "AI Service Error",
-                error: error.message
-            });
-        }
+        res.status(500).json({
+            message: "AI Service Error",
+            error: error.message,
+            modelAttempted: workingModel || "gemini-pro",
+            suggestion: "Try using /api/ai/test-model endpoint to test different models"
+        });
     }
 });
 
