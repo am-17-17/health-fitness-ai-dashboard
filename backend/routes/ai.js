@@ -1,37 +1,34 @@
 import express from "express";
-import OpenAI from "openai";
+import Groq from "groq-sdk";
 
 const router = express.Router();
 
 // Check if API key exists
-if (!process.env.DEEPSEEK_API_KEY) {
-    console.error("❌ DEEPSEEK_API_KEY is not set in environment variables");
+if (!process.env.GROQ_API_KEY) {
+    console.error("❌ GROQ_API_KEY is not set in environment variables");
 }
 
-// Initialize DeepSeek client (OpenAI-compatible)
-const deepseek = new OpenAI({
-    apiKey: process.env.DEEPSEEK_API_KEY,
-    baseURL: "https://api.deepseek.com/v1", // DeepSeek's API endpoint [citation:7][citation:10]
+const groq = new Groq({
+    apiKey: process.env.GROQ_API_KEY
 });
 
-// Test endpoint to check if everything works
-router.get("/test", async (req, res) => {
+// Test endpoint to check if Groq is working
+router.get("/test-groq", async (req, res) => {
     try {
-        const completion = await deepseek.chat.completions.create({
-            model: "deepseek-chat", // Use V3 model for general conversation [citation:1][citation:3]
+        const completion = await groq.chat.completions.create({
             messages: [
-                { role: "user", content: "Say hello in one word" }
+                { role: "user", content: "Say 'Groq is working!' in one sentence" }
             ],
-            max_tokens: 10
+            model: "mixtral-8x7b-32768",
+            max_tokens: 20
         });
 
         res.json({
             success: true,
-            message: "DeepSeek is working!",
-            response: completion.choices[0].message.content
+            message: "Groq is connected!",
+            response: completion.choices[0]?.message?.content
         });
     } catch (error) {
-        console.error("Test failed:", error);
         res.status(500).json({
             success: false,
             error: error.message
@@ -39,51 +36,44 @@ router.get("/test", async (req, res) => {
     }
 });
 
-// Main recipe endpoint
 router.post("/recipe", async (req, res) => {
     try {
         const { goal } = req.body;
 
+        console.log("📝 Generating recipe for goal:", goal);
+
         if (!goal) {
-            return res.status(400).json({
-                message: "Goal is required"
-            });
+            return res.status(400).json({ error: "Goal is required" });
         }
 
-        console.log(`📝 Generating recipe for goal: ${goal}`);
-
-        const completion = await deepseek.chat.completions.create({
-            model: "deepseek-chat", // Using V3 model [citation:1]
+        const completion = await groq.chat.completions.create({
             messages: [
                 {
                     role: "system",
-                    content: "You are a professional nutritionist. Create healthy meal plans with breakfast, lunch, dinner, and approximate calories. Be concise and practical."
+                    content: "You are a professional nutritionist. Create healthy meal plans with breakfast, lunch, dinner, and approximate calories."
                 },
                 {
                     role: "user",
-                    content: `Create a healthy meal plan for someone whose goal is: ${goal}.`
+                    content: `Create a detailed meal plan for ${goal}`
                 }
             ],
+            model: "mixtral-8x7b-32768", // Free model with 32K context
             temperature: 0.7,
             max_tokens: 1000
         });
 
-        const recipe = completion.choices[0].message.content;
-
+        const recipe = completion.choices[0]?.message?.content || "";
         console.log("✅ Recipe generated successfully");
 
         res.json({
-            result: recipe,
+            success: true,
+            result: recipe
         });
 
     } catch (error) {
-        console.error("❌ DeepSeek Error:", {
-            message: error.message,
-            status: error.status
-        });
-
+        console.error("❌ Groq Error:", error.message);
         res.status(500).json({
-            message: "AI Service Error",
+            success: false,
             error: error.message
         });
     }
