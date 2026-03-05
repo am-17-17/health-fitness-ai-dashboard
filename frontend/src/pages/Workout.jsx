@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Navbar from "./Navbar";
 import axios from "axios";
+import { API_URL } from "../config";
 import Footer from "../components/Footer";
 
 
@@ -18,6 +19,12 @@ function Workout() {
 
     // Function to generate workout
     const handleGenerateWorkout = async () => {
+
+        if (!goal) {
+            alert("Please enter a fitness goal");
+            return;
+        }
+
         try {
             const response = await axios.post(
                 `${API_URL}/api/ai/workout`,
@@ -27,7 +34,8 @@ function Workout() {
             setGeneratedWorkout(response.data.result);
 
         } catch (error) {
-            console.error(error);
+            console.error("Workout API error:", error);
+            alert("Failed to generate workout");
         }
     };
 
