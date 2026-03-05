@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 import { API_URL } from "../config";
 
@@ -127,11 +128,10 @@ function Signup() {
                                 right: "10px",
                                 top: "50%",
                                 transform: "translateY(-50%)",
-                                cursor: "pointer",
-                                fontSize: "16px"
+                                cursor: "pointer"
                             }}
                         >
-                            {showPassword ? "🙈" : "👁️"}
+                            {showPassword ? <FaEyeSlash color="#555" /> : <FaEye color="#555" />}
                         </span>
                     </div>
 

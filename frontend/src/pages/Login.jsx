@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../config";
 import { FcGoogle } from "react-icons/fc";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 
 function Login() {
@@ -94,8 +95,8 @@ function Login() {
                                 transform: "translateY(-50%)",
                                 cursor: "pointer"
                             }}
-                        >{showPassword ? "🙈" : "👁️"}
-                            
+                        >
+                            {showPassword ? <FaEyeSlash color="#555"  /> : <FaEye color="#555" />}
                         </span>
                     </div>
 
