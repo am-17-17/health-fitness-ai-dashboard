@@ -110,7 +110,7 @@ function Progress() {
 
                                 {/* DELETE BUTTON  */}
                                 <button
-                                    onClick={() => handelDelete(index)}
+                                    onClick={() => handleDelete(index)}
                                     style={{
                                         background: "transparent",
                                         border: "none",
