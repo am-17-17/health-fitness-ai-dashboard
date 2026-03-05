@@ -18,11 +18,6 @@ function Workout() {
 
     // Function to generate workout
     const handleGenerateWorkout = async () => {
-        if (!goal.trim()) {
-            alert("Please enter a goal");
-            return;
-        }
-
         try {
             const response = await axios.post(
                 `${API_URL}/api/ai/workout`,
